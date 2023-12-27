@@ -73,6 +73,19 @@ app.get('/',async(req,res)=>{
                                 ).toString("base64"),
                             }
                         }
+                        await gmail.users.messages.send(replyMsg);
+
+                        //adding label and to teh eamil that is sent
+                        await gmail.users.messages.modify({
+                            auth,
+                            userId:"me",
+                            id:m.id,
+                            resource:{
+                                addLabelIds:[labelId],
+                                removeLabelIds:["INBOX"],
+                            }
+                        })
+
                     }
 
 
