@@ -9,6 +9,17 @@ const {google} = require('googleapis')
 
 const port=8000;
 
+//these are the scopes that we will be accessing from our gmail account
+const scope = [
+    "https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/gmail.send",
+    "https://www.googleapis.com/auth/gmail.labels",
+    "https://mail.google.com/"
+]
+
+const label = "Gmail Auto-Reply" //label name attached to mail after sending a reply
+
+
 app.get('/',async(req,res)=>{
     res.json({Server: "Login Funcionality "})
 })
