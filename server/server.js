@@ -62,10 +62,20 @@ app.get('/',async(req,res)=>{
                     messageListVisibility:"show",
                 }
             })
-            return res.data.id;
+            return res.data.id; //returns label id
             
         } catch (error) {
-            
+            //if the label is already present , status 409
+            // label id is alread presetn we need ot genrate a labelName
+            if(error.code === 409){
+                const res = await gmail.users.labels.list({
+                    userId:"me",
+                });
+                const label = res.data.labels.find((l)=>l.name === labelName);
+                return label.id;
+            }else{
+                throw error;
+            }
         }
     }
 
