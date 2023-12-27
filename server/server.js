@@ -7,7 +7,7 @@ const {google} = require('googleapis')
 
 
 
-const port=3000;
+const port=8000;
 
 //these are the scopes that we will be accessing from our gmail account
 const scope = [
@@ -32,14 +32,33 @@ app.get('/',async(req,res)=>{
     console.log(gmail)
 
     //get all the labels present for the email
-    const response = await gmail.users.labels.list({
+    const AllLables = await gmail.users.labels.list({
         userId:"me"
     })
+
+
+    //function to find all email that have been unread or unreplied emails, so that we can send messaeg for these maisl
+    async function getUnreadEmails(auth){
+        const gmail = google.gmail({version:"v1",auth});
+        const res = await gmail.users.messages.list({
+            userId:"me",
+            labelIds:["INBOX"],
+            q:"is:unread",
+        });
+        return res.data.messages || []; //if no unread images , return empty array
+
+    }
+
+
+
+
 })
+
+
 
 
 
 app.listen(port,()=>{
     console.log("Go the URL Given Below and Login to your Google Account")
-    console.log("http://localhost:3000")
+    console.log("http://localhost:8000")
 })
