@@ -50,6 +50,27 @@ app.get('/',async(req,res)=>{
     }
 
 
+    //function to create a label and append it to a mail
+    async function createLabel(auth){
+        const gmail = google.gmail({version:"v1",auth});
+        try {
+            const res = await gmail.users.labels.create({
+                userId:"me",
+                requestBody:{
+                    name:labelName,
+                    labelListVisibility:"labelShow",
+                    messageListVisibility:"show",
+                }
+            })
+            return res.data.id;
+            
+        } catch (error) {
+            
+        }
+    }
+
+
+
 
 
 })
