@@ -57,6 +57,25 @@ app.get('/',async(req,res)=>{
                     })
 
                     const email = message.data;
+                    //frommteh unread messages , need to check if theere are any unreplied messages
+                    const replied = email.payload.headers.some((h)=> h.name === "In-Reply-To"); //if inreplyto is preset inheader, then we have already tpliedto teh mail
+
+                    if(!replied){
+                        const replyMsg={
+                            userId:"me",
+                            resource:{
+                                raw:Buffer.from(
+                                    `To:${email.payload.headers.find((h)=>h.name==="From").value}\r\n` + 
+                                    `Subject: Re: ${email.payload.headers.find((h)=>h.name==="Subject").value}\r\n` +
+                                    `Content-Type: text/plain; charset="UTF-8"\r\n` + 
+                                    `Content-Transfer-Encoding: 7bit\r\n\r\n` + 
+                                    `Thank You For Sending Me Your Email.\n\n I am Currently Unavailable and will revert back to you very Soon.\n\n Thank You.`
+                                ).toString("base64"),
+                            }
+                        }
+                    }
+
+
                 }
             }
 
