@@ -1,0 +1,11 @@
+{
+  "name": "gmail-auto-reply",
+  "version": "1.0.0",
+  "description": "A Backend Server that automatically replies to emails recieved.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
