@@ -66,7 +66,7 @@ app.get('/',async(req,res)=>{
                             resource:{
                                 raw:Buffer.from(
                                     `To:${email.payload.headers.find((h)=>h.name==="From").value}\r\n` + 
-                                    `Subject: Re: ${email.payload.headers.find((h)=>h.name==="Subject").value}\r\n` +
+                                    `Subject: Regarding: ${email.payload.headers.find((h)=>h.name==="Subject").value}\r\n` +
                                     `Content-Type: text/plain; charset="UTF-8"\r\n` + 
                                     `Content-Transfer-Encoding: 7bit\r\n\r\n` + 
                                     `Thank You For Sending Me Your Email.\n\n I am Currently Unavailable and will revert back to you very Soon.\n\n Thank You.`
