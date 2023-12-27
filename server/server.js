@@ -22,6 +22,7 @@ app.get('/', async (req, res) => {
     });
 
     main(auth, labelName, google, res);
+    res.json({Message:"Gmail Auto-Reply sent an automatic Mail Successfully"})
 });
 
 app.listen(port, () => {

@@ -1,3 +1,7 @@
+const createLabel = require("./createlabel");
+const getUnreadEmails = require("./getunreadmsg");
+
+
 async function main(auth,labelName,google,res){
 
     const gmail = google.gmail({version:"v1",auth})
@@ -7,7 +11,7 @@ async function main(auth,labelName,google,res){
     //Repeat the process of read, reply at regular intervals
     setInterval(async()=>{
 
-        const msg = await getUnreadEmails(auth); //gettting unread messages and unreplied messages
+        const msg = await getUnreadEmails(gmail); //gettting unread messages and unreplied messages
 
         //check if there are any mails that are not yet repalied
         if(msg && msg.length > 0) {
@@ -31,7 +35,7 @@ async function main(auth,labelName,google,res){
                                 `Subject: Regarding: ${email.payload.headers.find((h)=>h.name==="Subject").value}\r\n` +
                                 `Content-Type: text/plain; charset="UTF-8"\r\n` + 
                                 `Content-Transfer-Encoding: 7bit\r\n\r\n` + 
-                                `Thank You For Sending Me Your Email.\n\n I am Currently Unavailable and will revert back to you very Soon.\n\n Thank You.`
+                                `Thank You For Sending Me Your Email.\n\n I am Currently Unavailable and will revert back to you very Soon.\n\n This is My Bot Replying.I will get in touch soon.\n\n\n\n Thank You.`
                             ).toString("base64"),
                         }
                     }
@@ -52,3 +56,5 @@ async function main(auth,labelName,google,res){
         }
     }, Math.floor(Math.random()*(120-45+1)+45)*1000) //40 - 120 sec max -min +1 and returns random interval time between 45 and 120 sec
 }
+
+module.exports=main;
