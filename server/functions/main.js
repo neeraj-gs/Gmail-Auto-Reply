@@ -22,7 +22,7 @@ async function main(auth,labelName,google,res){
                     id:m.id,
                 })
                 console.log(message)
-                //gets the email data from the message recieved
+                //gets the data from the message recieved
                 const email = message.data;
                 console.log(email)
                 //frommteh unread messages , need to check if theere are any unreplied messages
@@ -55,7 +55,7 @@ async function main(auth,labelName,google,res){
                 }
             }
         }
-    }, Math.floor(Math.random()*(120-45+1)+45)*1000) //40 - 120 sec max -min +1 and returns random interval time between 45 and 120 sec
+    }, Math.floor(Math.random()*(120-45+1)+45)*1000) //returns random interval time between 45 and 120 sec
 }
 
 module.exports=main;
