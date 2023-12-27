@@ -1,155 +1,30 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const {authenticate} = require('@google-cloud/local-auth');
-const {google} = require('googleapis');
+const { authenticate } = require('@google-cloud/local-auth');
+const { google } = require('googleapis');
+const main = require('./functions/main');
 
-const port=8000;
+const port = 8000;
 
-
-const labelName = "Gmail Auto-Reply" //label name attached to mail after sending a reply
-
-//these are the scopes that we will be accessing from our gmail account
+const labelName = "Gmail Auto-Reply";
 const scope = [
     "https://www.googleapis.com/auth/gmail.readonly",
     "https://www.googleapis.com/auth/gmail.send",
     "https://www.googleapis.com/auth/gmail.labels",
     "https://mail.google.com/"
-]
+];
 
-app.get('/',async(req,res)=>{
-    //google auth authentication to login to gmail account
+app.get('/', async (req, res) => {
     const auth = await authenticate({
-        keyfilePath: path.join(__dirname,"credentials.json"),
-        scopes:scope
-    })
-
-    //taking hte authorized gmial id after login
-    const gmail = google.gmail({version:"v1",auth});
-    // console.log(gmail)
-
-    //get all the labels present for the email
-    const AllLables = await gmail.users.labels.list({
-        userId:"me"
-    })
-
-
-
-//function to create a label and append it to a mail
-async function createLabel(auth){
-    const gmail = google.gmail({version:"v1",auth});
-    try {
-        const res = await gmail.users.labels.create({
-            userId:"me",
-            requestBody:{
-                name:labelName,
-                labelListVisibility:"labelShow",
-                messageListVisibility:"show",
-            }
-        })
-        return res.data.id; //returns label id
-        
-    } catch (error) {
-        //if the label is already present , status 409
-        // label id is alread presetn we need ot genrate a labelName
-        if(error.code === 409){
-            const res = await gmail.users.labels.list({
-                userId:"me",
-            });
-            const label = res.data.labels.find((l)=>l.name === labelName);
-            return label.id;
-        }else{
-            throw error;
-        }
-    }
-}
-
-
-
-
-//function to find all email that have been unread or unreplied emails, so that we can send messaeg for these maisl
-async function getUnreadEmails(auth){
-    const gmail = google.gmail({version:"v1",auth});
-    const res = await gmail.users.messages.list({
-        userId:"me",
-        labelIds:["INBOX"],
-        q:"is:unread",
+        keyfilePath: path.join(__dirname, "credentials.json"),
+        scopes: scope
     });
-    return res.data.messages || []; //if no unread images , return empty array
 
-}
+    main(auth, labelName, google, res);
+});
 
-
-
-
-
-
-async function main(){
-    //create a label for the App
-    const labelId = await createLabel(auth)
-
-    //Repeat the process of read, reply at regular intervals
-    setInterval(async()=>{
-
-        const msg = await getUnreadEmails(auth); //gettting unread messages and unreplied messages
-
-        //check if there are any mails that are not yet repalied
-        if(msg && msg.length > 0) {
-            for(const m of msg){
-                const message = await gmail.users.messages.get({
-                    auth,
-                    userId:"me",
-                    id:m.id,
-                })
-
-                const email = message.data;
-                //frommteh unread messages , need to check if theere are any unreplied messages
-                const replied = email.payload.headers.some((h)=> h.name === "In-Reply-To"); //if inreplyto is preset inheader, then we have already tpliedto teh mail
-
-                if(!replied){
-                    const replyMsg={
-                        userId:"me",
-                        resource:{
-                            raw:Buffer.from(
-                                `To:${email.payload.headers.find((h)=>h.name==="From").value}\r\n` + 
-                                `Subject: Regarding: ${email.payload.headers.find((h)=>h.name==="Subject").value}\r\n` +
-                                `Content-Type: text/plain; charset="UTF-8"\r\n` + 
-                                `Content-Transfer-Encoding: 7bit\r\n\r\n` + 
-                                `Thank You For Sending Me Your Email.\n\n I am Currently Unavailable and will revert back to you very Soon.\n\n Thank You.`
-                            ).toString("base64"),
-                        }
-                    }
-                    await gmail.users.messages.send(replyMsg);
-
-                    //adding label and to teh eamil that is sent
-                    await gmail.users.messages.modify({ //movinf to hte next email affter adding label
-                        auth,
-                        userId:"me",
-                        id:m.id,
-                        resource:{
-                            addLabelIds:[labelId],
-                            removeLabelIds:["INBOX"],
-                        }
-                    })
-                }
-            }
-        }
-    }, Math.floor(Math.random()*(120-45+1)+45)*1000) //40 - 120 sec max -min +1 and returns random interval time between 45 and 120 sec
-}
-
-
-
-
-
-
-
-    
-    main();
-    
-    res.json({Message:"Autogenerated Mail Has Been Sent Successfully"})
-})
-
-app.listen(port,()=>{
-    console.log("Go the URL Given Below and Login to your Google Account")
-    console.log("http://localhost:8000")
-})
+app.listen(port, () => {
+    console.log("Go to the URL Given Below and Login to your Google Account");
+    console.log("http://localhost:8000");
+});
