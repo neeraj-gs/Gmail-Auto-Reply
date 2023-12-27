@@ -5,6 +5,7 @@ const {authenticate} = require('@google-cloud/local-auth');
 const fs = require('fs').promises;
 const {google} = require('googleapis');
 const { createLabel } = require('./functions/createlabel');
+const { getUnreadEmails } = require('./functions/getunreadmsg');
 
 
 
@@ -40,6 +41,28 @@ app.get('/',async(req,res)=>{
     async function main(){
         //create a label for the App
         const labelId = await createLabel(auth)
+
+        //Repeat the process of read, reply at regular intervals
+        setInterval(async()=>{
+
+            const msg = await getUnreadEmails(auth); //gettting unread messages and unreplied messages
+
+            //check if there are any mails that are not yet repalied
+            if(msg && msg.length > 0) {
+                for(const m of msg){
+                    const message = await gmail.users.messages.get({
+                        auth,
+                        userId:"me",
+                        id:m.id,
+                    })
+
+                    const email = message.data;
+                }
+            }
+
+
+
+        }, Math.floor(Math.random()*(120-45+1)+45)*1000) //40 - 120 sec max -min +1 and returns random interval time between 45 and 120 sec
 
 
 
