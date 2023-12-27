@@ -80,4 +80,6 @@ Wait for a time between 45-120 seconds , an automatic mail is sent to the sender
 - Use OpenAI to generate message based in the mail , instead of harcoding the Reply message.
 - Deploy the server and make it run infinitely using pm2, so that users need not run the backend server everytime they have to reply.
 - Create a frontend , giving information about the proejct and a login button.
+- Can Convert the code from Javascript to Typescript for more type safer code.
+- Can Deploy on AWS for Aitoscaling feature , if the number requests going to backend are high.
 
