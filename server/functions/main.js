@@ -50,7 +50,6 @@ async function main(auth,labelName,google,res){
                         id:m.id,
                         resource:{
                             addLabelIds:[labelId],
-                            removeLabelIds:["INBOX"],
                         }
                     })
                 }
